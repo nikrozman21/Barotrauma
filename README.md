@@ -1,5 +1,17 @@
 # Barotrauma
 
+Compile instructions:
+```bash
+cd Barotrauma\BarotraumaServer
+dotnet publish LinuxServer.csproj -c Release -r linux-x64 --self-contained
+```
+
+Files to replace:
+- DedicatedServer.dll
+
+----
+
+
 Copyright © FakeFish Ltd 2017-2022
 
 Before downloading the source code, please read the [EULA](EULA.txt).
