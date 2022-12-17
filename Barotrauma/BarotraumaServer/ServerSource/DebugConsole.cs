@@ -25,11 +25,11 @@ namespace Barotrauma
                 if (!CheatsEnabled && IsCheat)
                 {
                     NewMessage("Client \"" + client.Name + "\" attempted to use the command \"" + names[0] + "\". Cheats must be enabled using \"enablecheats\" before the command can be used.", Color.Red);
-                    GameMain.Server.SendConsoleMessage("You need to enable cheats using the command \"enablecheats\" before you can use the command \"" + names[0] + "\".", client, Color.Red);
+                    GameMain.Server.SendConsoleMessage("You need to enable cheats using the command \"enablecheats\" before you can use the command \"" + names[0] + "\".", client);
 
 #if USE_STEAM
-                    NewMessage("Enabling cheats will disable Steam achievements during this play session.", Color.Red);
-                    GameMain.Server.SendConsoleMessage("Enabling cheats will disable Steam achievements during this play session.", client, Color.Red);
+                    NewMessage("Enabling cheats will disable Steam achievements during this play session.");
+                    GameMain.Server.SendConsoleMessage("Enabling cheats will disable Steam achievements during this play session.", client);
 #endif
 
                     return;
@@ -106,21 +106,11 @@ namespace Barotrauma
 
                     if (msg.IsCommand) commandMemory.Add(msgTxt);
 
-                    if(!Console.IsOutputRedirected)
-                    {
-                        int paddingLen = consoleWidth - (msg.Text.Length % consoleWidth) - 1;
-                        msgTxt += new string(' ', paddingLen > 0 ? paddingLen : 0);
-
-                        Console.ForegroundColor = XnaToConsoleColor.Convert(msg.Color);
-                    }
                     Console.WriteLine(msgTxt);
 
                     if (sw.ElapsedMilliseconds >= maxTime) { break; }
                 }
-                if (!Console.IsOutputRedirected)
-                {
-                    RewriteInputToCommandLine(input);
-                }
+                   RewriteInputToCommandLine(input);
             }
             if (Messages.Count > MaxMessages)
             {
@@ -131,102 +121,15 @@ namespace Barotrauma
             if(!Console.IsOutputRedirected && !Console.IsInputRedirected)
             {
                 //read player input
-                bool rewriteInput = false;
                 while (Console.KeyAvailable)
                 {
-                    if (sw.ElapsedMilliseconds >= maxTime)
-                    {
-                        rewriteInput = false;
-                        break;
-                    }
-                    rewriteInput = true;
-                    ConsoleKeyInfo key = Console.ReadKey(true);
-                    switch (key.Key)
-                    {
-                        case ConsoleKey.Enter:
-                            lock (QueuedCommands)
-                            {
-                                QueuedCommands.Add(input);
-                            }
-                            input = "";
-                            memoryIndex = -1;
-                            break;
-                        case ConsoleKey.Backspace:
-                            if (input.Length > 0) input = input.Substring(0, input.Length - 1);
-                            ResetAutoComplete();
-                            memoryIndex = -1;
-                            break;
-                        case ConsoleKey.LeftArrow:
-                            input = AutoComplete(input, -1);
-                            break;
-                        case ConsoleKey.RightArrow:
-                            input = AutoComplete(input, 1);
-                            break;
-                        case ConsoleKey.UpArrow:
-                            memoryIndex--;
-                            if (memoryIndex < 0) memoryIndex = commandMemory.Count - 1;
-                            if (memoryIndex >= commandMemory.Count) memoryIndex = commandMemory.Count - 1;
-                            if (memoryIndex >= 0)
-                            {
-                                input = commandMemory[memoryIndex];
-                            }
-                            break;
-                        case ConsoleKey.DownArrow:
-                            memoryIndex++;
-                            if (memoryIndex < 0) memoryIndex = 0;
-                            if (memoryIndex >= commandMemory.Count) memoryIndex = 0;
-                            if (commandMemory.Count>0)
-                            {
-                                input = commandMemory[memoryIndex];
-                            }
-                            break;
-                        case ConsoleKey.Tab:
-                            if (input.Length > 0)
-                            {
-                                input = AutoComplete(input, 0);
-                                memoryIndex = -1;
-                            }
-                            break;
-                        default:
-                            if (key.KeyChar != 0)
-                            {
-                                input += key.KeyChar;
-                                memoryIndex = -1;
-                            }
-                            ResetAutoComplete();
-                            break;
-                    }
+                    string input = Console.ReadLine();
+                    QueuedCommands.Add(input);
+                    RewriteInputToCommandLine(input);
                 }
-                if (rewriteInput) { RewriteInputToCommandLine(input); }
             }
 
             sw.Stop();
-        }
-
-        private static void WriteAndResetLine(string txt)
-        {
-            int consoleWidth = Console.BufferWidth;
-            int linesWritten = 0;
-            while (true)
-            {
-                if (txt.Length > consoleWidth)
-                {
-                    linesWritten++;
-                    Console.Write(txt.Substring(0, consoleWidth));
-                    txt = txt.Substring(consoleWidth);
-                }
-                else
-                {
-                    Console.Write(txt);
-                    if (txt.Length == consoleWidth)
-                    {
-                        Console.Write(' '); Console.CursorLeft--;
-                        linesWritten++;
-                    }
-                    break;
-                }
-            }
-            Console.CursorTop -= linesWritten;
         }
 
         private static void RewriteInputToCommandLine(string input)
@@ -252,10 +155,8 @@ namespace Barotrauma
                 ln += new string(' ', consoleWidth - (ln.Length % consoleWidth));
                 Console.ForegroundColor = ConsoleColor.DarkGray;
                 Console.CursorLeft = 0;
-                WriteAndResetLine(ln);
                 Console.ForegroundColor = ConsoleColor.White;
                 Console.CursorLeft = 0;
-                WriteAndResetLine(tmpInput);
                 Console.CursorLeft = input.Length % consoleWidth;
             }
             catch (Exception e)

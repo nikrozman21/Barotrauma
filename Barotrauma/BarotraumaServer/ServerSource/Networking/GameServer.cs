@@ -493,8 +493,7 @@ namespace Barotrauma.Networking
                         SendConsoleMessage(
                             startGameCoroutine.Exception.Message + '\n' +
                             (startGameCoroutine.Exception.StackTrace?.CleanupStackTrace() ?? "null"),
-                            connectedClients.Find(c => c.Connection == OwnerConnection),
-                            Color.Red);
+                            connectedClients.Find(c => c.Connection == OwnerConnection));
                     }
 
                     EndGame();
@@ -1475,7 +1474,7 @@ namespace Barotrauma.Networking
                     var sub = GameMain.NetLobbyScreen.GetSubList().FirstOrDefault(s => s.MD5Hash.StringRepresentation == subHash);
                     if (sub == null)
                     {
-                        DebugConsole.NewMessage($"Client \"{ClientLogName(sender)}\" attempted to select a sub, could not find a sub with the MD5 hash \"{subHash}\".", Color.Red);
+                        DebugConsole.NewMessage($"Client \"{ClientLogName(sender)}\" attempted to select a sub, could not find a sub with the MD5 hash \"{subHash}\".");
                     }
                     else
                     {
@@ -1612,7 +1611,7 @@ namespace Barotrauma.Networking
         {
             if (GameSettings.CurrentConfig.VerboseLogging)
             {
-                DebugConsole.NewMessage("Sending initial lobby update", Color.Gray);
+                DebugConsole.NewMessage("Sending initial lobby update");
             }
 
             outmsg.WriteByte(c.SessionId);
