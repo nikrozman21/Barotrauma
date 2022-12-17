@@ -87,7 +87,7 @@ namespace Barotrauma
 
                 if (!Console.IsOutputRedirected)
                 {
-                    Console.CursorLeft = 0;
+                    //Console.CursorLeft = 0;
                 }
                 while (queuedMessages.TryDequeue(out var msg))
                 {
@@ -154,9 +154,8 @@ namespace Barotrauma
                 }
                 ln += new string(' ', consoleWidth - (ln.Length % consoleWidth));
                 Console.ForegroundColor = ConsoleColor.DarkGray;
-                Console.CursorLeft = 0;
+                //Console.CursorLeft = 0;
                 Console.ForegroundColor = ConsoleColor.White;
-                Console.CursorLeft = 0;
                 Console.CursorLeft = input.Length % consoleWidth;
             }
             catch (Exception e)
