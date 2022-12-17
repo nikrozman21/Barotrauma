@@ -1,0 +1,31 @@
+name: .NET Core Desktop
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET Core SDK
+      uses: actions/setup-dotnet@v3.0.3
+      with:
+        dotnet-version: 6.0.x
+    - name: Restore
+      run: dotnet restore
+    - name: Build
+      run: dotnet build --no-restore
+    - name: Publish
+      working-directory: ./Barotrauma/BarotraumaServer
+      run: dotnet publish LinuxServer.csproj -c Release -r linux-x64 --self-contained
+    - name: Upload a Build Artifact
+      uses: actions/upload-artifact@v3.1.1
+      with:
+        name: DedicatedServer.dll
+        path: ./Barotrauma/bin/ReleaseLinux/net6.0/linux-x64/publish/DedicatedServer.dll
