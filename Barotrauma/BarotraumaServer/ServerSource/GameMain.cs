@@ -295,7 +295,7 @@ namespace Barotrauma
             double frequency = (double)Stopwatch.Frequency;
             if (frequency <= 1500)
             {
-                DebugConsole.NewMessage("WARNING: Stopwatch frequency under 1500 ticks per second. Expect significant syncing accuracy issues.");
+                DebugConsole.NewMessage("WARNING: Stopwatch frequency under 1500 ticks per second. Expect significant syncing accuracy issues.", Color.Yellow);
             }
 
             Stopwatch performanceCounterTimer = Stopwatch.StartNew();
@@ -336,7 +336,18 @@ namespace Barotrauma
                     updateCount++;
                 }
 
+#if !DEBUG
+                if (Server?.OwnerConnection == null)
+                {
+                    DebugConsole.UpdateCommandLine((int)(Timing.Accumulator * 800));
+                }
+                else
+                {
+                    DebugConsole.Clear();
+                }
+#else
                 DebugConsole.UpdateCommandLine((int)(Timing.Accumulator * 800));
+#endif
 
                 int frameTime = (int)((stopwatch.ElapsedTicks - prevTicks) / frequency * 1000.0);
                 frameTime = Math.Max(0, frameTime);
@@ -359,7 +370,7 @@ namespace Barotrauma
                                 {
                                     if (c.Connection == Server.OwnerConnection || c.Permissions != ClientPermissions.None)
                                     {
-                                        Server.SendConsoleMessage($"Server running slowly ({avgUpdateRate} updates/s)!", c);
+                                        Server.SendConsoleMessage($"Server running slowly ({avgUpdateRate} updates/s)!", c, Color.Orange);
                                     }
                                 }
                             }

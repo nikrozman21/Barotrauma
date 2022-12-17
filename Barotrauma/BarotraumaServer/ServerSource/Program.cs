@@ -204,6 +204,7 @@ namespace Barotrauma
             }
 
             sb.AppendLine("Last debug messages:");
+            DebugConsole.Clear();
             for (int i = DebugConsole.Messages.Count - 1; i > 0 && i > DebugConsole.Messages.Count - 15; i--)
             {
                 sb.AppendLine("   " + DebugConsole.Messages[i].Time + " - " + DebugConsole.Messages[i].Text);
@@ -211,6 +212,10 @@ namespace Barotrauma
 
             string crashReport = sb.ToString();
 
+            if (!Console.IsOutputRedirected)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+            }
             Console.Write(crashReport);
 
             File.WriteAllText(filePath, sb.ToString());
