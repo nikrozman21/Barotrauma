@@ -18,9 +18,9 @@ jobs:
       with:
         dotnet-version: 6.0.x
     - name: Restore
-      run: dotnet restore
+      run: dotnet restore LinuxSolution.sln
     - name: Build
-      run: dotnet build --no-restore
+      run: dotnet build --no-restore LinuxSolution.sln
     - name: Publish
       working-directory: ./Barotrauma/BarotraumaServer
       run: dotnet publish LinuxServer.csproj -c Release -r linux-x64 --self-contained
